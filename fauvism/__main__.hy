@@ -6,5 +6,6 @@
 
 
 (defmain [script #* vals]
-  (rich.print (LineRenderable
-                (lfor val vals (float val)))))
+  (when vals
+    (rich.print (LineRenderable (lfor val vals (float val))))
+    (return)))

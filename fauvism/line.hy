@@ -4,9 +4,11 @@
 (import rich.segment [Segment])
 
 
-(setv BARS "▁▂▃▄▅▆▇█")
-(setv POSITIVE-COLORS ["#e5f5e0" "#a1d99b" "#31a354"])
-(setv NEGATIVE-COLORS ["#deebf7" "#9ecae1" "#3182bd"])
+(setv POSITIVE-BARS " ▁▂▃▄▅▆▇█")
+(setv NEGATIVE-BARS "█▇▆▅▄▃▂▁ ")
+(setv NEGATIVE-COLORS ["#fee08b" "#fc8d59" "#d73027"])
+(setv POSITIVE-COLORS ["#d9ef8b" "#91cf60" "#1a9850"])
+                                ; neutral "#ffffbf"
 
 
 (defclass LineRenderable []
@@ -21,8 +23,8 @@
     (setv min-val (min min-val (- max-val))
           max-val (max max-val (- min-val)))
     (setv buckets
-          (* (len BARS) (+ (len NEGATIVE_COLORS)
-                           (len POSITIVE_COLORS))))
+          (* (len POSITIVE-BARS) (+ (len NEGATIVE_COLORS)
+                                    (len POSITIVE_COLORS))))
     (setv self.bucket-size
           (math.ceil (/ (- max-val min-val) buckets)))
 
@@ -31,15 +33,25 @@
                 (self.segment (int (/ val self.bucket-size))))))
 
   (defn segment [self bucket]
-    #_ (positive only)
-    (setv bar-index (% bucket (len BARS)))
-    (setv color-index (min (- (len POSITIVE-COLORS) 1)
-                           (int (/ bucket (len BARS)))))
-    (Segment (get BARS bar-index)
-             (Style :color (get POSITIVE-COLORS color-index)
-                    :bgcolor (if (> color-index 0)
-                                 (get POSITIVE-COLORS (- color-index 1))
-                                 None))))
+    (if (>= bucket 0)
+        (do
+          (setv bar-index (% bucket (len POSITIVE-BARS)))
+          (setv color-index (min (- (len POSITIVE-COLORS) 1)
+                                 (int (/ bucket (len POSITIVE-BARS)))))
+          (Segment (get POSITIVE-BARS bar-index)
+                   (Style :color (get POSITIVE-COLORS color-index)
+                          :bgcolor (if (> color-index 0)
+                                       (get POSITIVE-COLORS (- color-index 1))
+                                       None))))
+        (do
+          (setv bar-index (% (- bucket) (len NEGATIVE-BARS)))
+          (setv color-index (min (- (len NEGATIVE-COLORS) 1)
+                                 (int (/ (- bucket) (len NEGATIVE-BARS)))))
+          (Segment (get NEGATIVE-BARS bar-index)
+                   (Style :bgcolor (get NEGATIVE-COLORS color-index)
+                          :color (if (> color-index 0)
+                                     (get NEGATIVE-COLORS (- color-index 1))
+                                     "black"))))))
 
   (defn __rich_console__ [self console options]
     (for [segment self.segments]
