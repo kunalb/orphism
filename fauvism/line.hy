@@ -61,6 +61,8 @@
                                      "black"))))))
 
   (defn __rich_console__ [self console options]
-    (for [segment self.segments]
+    (setv offset
+          (max 0 (- (len self.segments) console.size.width)))
+    (for [segment (cut self.segments offset None)]
       (yield segment))
     (yield "\n")))
