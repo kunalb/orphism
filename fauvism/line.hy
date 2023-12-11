@@ -13,11 +13,14 @@
 
 (defclass LineRenderable []
 
-  (defn __init__ [self vals]
-    (setv self.vals vals)
+  (defn __init__ [self [vals None]]
+    (setv self.vals (or vals []))
+    (setv self.segments [])
     (self.rescale))
 
   (defn rescale [self]
+    (when (not self.vals) (return))
+
     (setv min-val (min self.vals)
           max-val (max self.vals))
     (setv min-val (min min-val (- max-val))
@@ -31,6 +34,10 @@
     (setv self.segments
           (lfor val self.vals
                 (self.segment (int (/ val self.bucket-size))))))
+
+  (defn add-val [self val]
+    (self.vals.append val)
+    (self.rescale))
 
   (defn segment [self bucket]
     (if (>= bucket 0)
