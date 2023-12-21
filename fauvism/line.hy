@@ -4,12 +4,13 @@
 (import rich.segment [Segment])
 
 
-(setv POSITIVE-BARS " ▁▂▃▄▅▆▇█")
-(setv NEGATIVE-BARS "█▇▆▅▄▃▂▁ ")
-(setv NEGATIVE-COLORS ["#fee08b" "#fc8d59" "#d73027"])
-(setv POSITIVE-COLORS ["#d9ef8b" "#91cf60" "#1a9850"])
-                                ; neutral "#ffffbf"
+(setv POSITIVE-BARS "▁▂▃▄▅▆▇")
+(setv NEGATIVE-BARS "▇▆▅▄▃▂▁")
 
+(setv BACKGROUND-COLOR "#000000")
+(setv NEGATIVE-COLORS (cut ["#fee08b" "#fc8d59" "#d73027"] None None -1))
+(setv POSITIVE-COLORS (cut ["#d9ef8b" "#91cf60" "#1a9850"] None None -1))
+                                ; neutral "#ffffbf"
 
 (defclass LineRenderable []
 
@@ -26,10 +27,12 @@
     (setv min-val (min min-val (- max-val))
           max-val (max max-val (- min-val)))
     (setv buckets
-          (* (len POSITIVE-BARS) (+ (len NEGATIVE_COLORS)
-                                    (len POSITIVE_COLORS))))
+          (+
+            (* (len POSITIVE-BARS) (len POSITIVE_COLORS))
+            (* (len NEGATIVE-BARS) (len NEGATIVE-COLORS))))
     (setv self.bucket-size
           (math.ceil (/ (- max-val min-val) buckets)))
+    (print self.bucket-size)
 
     (setv self.segments
           (lfor val self.vals
@@ -49,7 +52,7 @@
                    (Style :color (get POSITIVE-COLORS color-index)
                           :bgcolor (if (> color-index 0)
                                        (get POSITIVE-COLORS (- color-index 1))
-                                       None))))
+                                       BACKGROUND-COLOR))))
         (do
           (setv bar-index (% (- bucket) (len NEGATIVE-BARS)))
           (setv color-index (min (- (len NEGATIVE-COLORS) 1)
@@ -58,11 +61,14 @@
                    (Style :bgcolor (get NEGATIVE-COLORS color-index)
                           :color (if (> color-index 0)
                                      (get NEGATIVE-COLORS (- color-index 1))
-                                     "black"))))))
+                                     BACKGROUND-COLOR))))))
 
   (defn __rich_console__ [self console options]
     (setv offset
-          (max 0 (- (len self.segments) console.size.width)))
+          (max 0 (- (len self.segments) (- console.size.width 10))))
     (for [segment (cut self.segments offset None)]
       (yield segment))
+    (when self.vals
+      (yield f" {(get self.vals -1):.02E}"))
+
     (yield "\n")))
