@@ -3,72 +3,51 @@
 (import rich.style [Style])
 (import rich.segment [Segment])
 
+(import .bucket [BucketList])
 
-(setv POSITIVE-BARS "▁▂▃▄▅▆▇")
-(setv NEGATIVE-BARS "▇▆▅▄▃▂▁")
 
-(setv BACKGROUND-COLOR "#000000")
-(setv NEGATIVE-COLORS (cut ["#fee08b" "#fc8d59" "#d73027"] None None -1))
-(setv POSITIVE-COLORS (cut ["#d9ef8b" "#91cf60" "#1a9850"] None None -1))
-                                ; neutral "#ffffbf"
+(setv BARS " ▁▂▃▄▅▆▇")
+(setv COLORS ["#000000" "#1a9850" "#91cf60" "#d9ef8b"
+              "#fee08b" "#fc8d59" "#d73027"])
 
 (defclass LineRenderable []
 
   (defn __init__ [self [vals None]]
-    (setv self.vals (or vals []))
-    (setv self.segments [])
-    (self.rescale))
-
-  (defn rescale [self]
-    (when (not self.vals) (return))
-
-    (setv min-val (min self.vals)
-          max-val (max self.vals))
-    (setv min-val (min min-val (- max-val))
-          max-val (max max-val (- min-val)))
-    (setv buckets
-          (+
-            (* (len POSITIVE-BARS) (len POSITIVE_COLORS))
-            (* (len NEGATIVE-BARS) (len NEGATIVE-COLORS))))
-    (setv self.bucket-size
-          (math.ceil (/ (- max-val min-val) buckets)))
-    (print self.bucket-size)
-
-    (setv self.segments
-          (lfor val self.vals
-                (self.segment (int (/ val self.bucket-size))))))
+    (setv self.-buckets (BucketList (* (len BARS) (// (len COLORS) 2)) vals))
+    (setv self.-segment-cache {}))
 
   (defn add-val [self val]
-    (self.vals.append val)
-    (self.rescale))
+    (self.-buckets.append val))
 
   (defn segment [self bucket]
-    (if (>= bucket 0)
-        (do
-          (setv bar-index (% bucket (len POSITIVE-BARS)))
-          (setv color-index (min (- (len POSITIVE-COLORS) 1)
-                                 (int (/ bucket (len POSITIVE-BARS)))))
-          (Segment (get POSITIVE-BARS bar-index)
-                   (Style :color (get POSITIVE-COLORS color-index)
-                          :bgcolor (if (> color-index 0)
-                                       (get POSITIVE-COLORS (- color-index 1))
-                                       BACKGROUND-COLOR))))
-        (do
-          (setv bar-index (% (- bucket) (len NEGATIVE-BARS)))
-          (setv color-index (min (- (len NEGATIVE-COLORS) 1)
-                                 (int (/ (- bucket) (len NEGATIVE-BARS)))))
-          (Segment (get NEGATIVE-BARS bar-index)
-                   (Style :bgcolor (get NEGATIVE-COLORS color-index)
-                          :color (if (> color-index 0)
-                                     (get NEGATIVE-COLORS (- color-index 1))
-                                     BACKGROUND-COLOR))))))
+    (when (in bucket self.-segment-cache)
+      (return (get self.-segment-cache bucket)))
+
+    (setv invert 1)
+    (when (< bucket 0)
+      (setv invert -1)
+      (setv bucket (- bucket)))
+
+    (setv fg-color (+ 1 (// bucket (len BARS))))
+    (setv bg-color (- fg-color 1))
+
+    (setv bar-index (% bucket (len BARS)))
+
+    (setv segment
+          (Segment (get BARS bar-index)
+                   (Style :color (get COLORS (* invert fg-color))
+                          :bgcolor (get COLORS (* invert bg-color)))))
+
+    (setv (get self.-segment-cache (* invert bucket)) segment)
+
+    segment)
 
   (defn __rich_console__ [self console options]
     (setv offset
-          (max 0 (- (len self.segments) (- console.size.width 10))))
-    (for [segment (cut self.segments offset None)]
-      (yield segment))
-    (when self.vals
-      (yield f" {(get self.vals -1):.02E}"))
+          (max 0 (- (len self.-buckets) (- console.size.width 10))))
+    (for [bucket (cut self.-buckets offset None)]
+      (yield (self.segment bucket)))
+    (when self.-buckets
+      (yield f" {(get self.-buckets.vals -1):.02E}"))
 
     (yield "\n")))
