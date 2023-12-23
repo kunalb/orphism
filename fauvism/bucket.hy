@@ -1,51 +1,47 @@
-(import collections.abc [Sequence])
+(import collections.abc [MutableSequence])
 (import enum [Enum])
 
 
-(defclass BucketList [Sequence]
+(defclass BucketList [MutableSequence]
+
+  (defclass Scale [Enum]
+    (setv LINEAR 0)
+    (setv LOG 1))
 
   (defn __init__ [self
                   bucket-count
-                  [vals None]
-                  [vals-range None]
-                  [scale None]]
+                  [iterable None]
+                  [range-max None]
+                  [scale Scale.LINEAR]]
     (setv
       self.-bucket-count bucket-count
-      self.-vals vals
-      self.-vals-range vals-range
+      self.-vals (if iterable (list iterable) [])
       self.-scale scale
+      self.-range-max range-max
+      self.-bucketed []))
 
-      self.-bucket-size 0
-      self.-min-val (min self.-vals)
-      self.-max-val (max self.-vals)
-      self.-bucket-range (or self.-vals-range)
-      self.-buckets (* [0] (len self.-vals))))
+  (defn set-range-max [self range-max]
+    (setv self.-range-max range-max))
 
-  (defn add-vals [self vals]
-    (self.-vals.extend vals))
+  (defn get-range-max [self]
+    self.-range-max)
 
-  (defn add-val [self val]
-    (self.-vals.append val))
+  (defn vals [self]
+    self.-vals)
 
-  (defn set-range [self val-range]
-    (setv self.-val-range val-range))
-
-  (defn get-range [self]
-    ...)
-
-  (defn set-vals [self vals]
-    (setv self.-vals vals))
-
-  (defn buckets [self]
-    (when self.-bucketed
-      (return self.-bucketed-vals))
-    [])
-
-  (defn -make-buckets [self]
-    )
+  ;; Abstract methods
 
   (defn __getitem__ [self key]
-    (get self.-bucketed-vals key))
+    (get self.-bucketed key))
 
   (defn __len__ [self]
-    (len self.-bucketed-vals)))
+    (len self.-bucketed))
+
+  (defn __setitem__ [self key val]
+    (setv (get self.-vals key) val))
+
+  (defn __delitem__ [self]
+    (del (get self.-vals key)))
+
+  (defn insert [self key val]
+    (self.-vals.insert key val)))
