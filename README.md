@@ -14,6 +14,7 @@ This is currently a **development build**: please expect the API and design to c
 
 ![Demo](https://github.com/kunalb/orphism/raw/main/images/orphism.png)
 
+![Temperatures](https://github.com/kunalb/orphism/raw/main/images/temperatures.png)
 
 ## Installation
 
