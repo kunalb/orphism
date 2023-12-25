@@ -5,12 +5,9 @@
 
 (import .bucket [BucketList])
 
-
 (setv BARS " ▁▂▃▄▅▆▇")
 (setv COLORS ["#000000" "#1a9850" "#91cf60" "#d9ef8b"
               "#fee08b" "#fc8d59" "#d73027"])
-
-; Add NAN / INF support
 
 (defclass LineRenderable []
 
@@ -56,6 +53,15 @@
     (for [bucket (cut self.-buckets offset None)]
       (yield (self.segment bucket)))
     (when self.-buckets
-      (yield f" {(get self.-buckets.vals -1):.02E}"))
+      (yield (Segment f" {(-format-number-9 (get self.-buckets.vals -1))}"
+                      (Style :color "#ffffff" :bgcolor "#000000"))))
 
     (yield "\n")))
+
+
+(defn -format-number-9 [x]
+  "Formats a number to fit within 9 characters."
+  (setv formatted f"{x :.9g}")
+  (if (> (len formatted) 9)
+      f"{x :.02E}"
+      formatted))
