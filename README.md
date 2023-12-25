@@ -1,3 +1,3 @@
 # README
 
-A text-based implementation of Cubism.
+A text-based implementation of Cubism.js.
