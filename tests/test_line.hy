@@ -1,6 +1,6 @@
 (import unittest)
 
-(import fauvism.line)
+(import orphism.line)
 
 (require hyrule.control [defmain])
 

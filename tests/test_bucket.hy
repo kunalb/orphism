@@ -1,6 +1,6 @@
 (import unittest)
 
-(import fauvism.bucket [BucketList])
+(import orphism.bucket [BucketList])
 
 (require hyrule.control [defmain])
 
