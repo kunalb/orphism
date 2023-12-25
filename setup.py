@@ -1,5 +1,9 @@
 from setuptools import setup, find_packages
 
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
+
 setup(
     name="orphism",
     version="0.0.1.dev2",
@@ -16,5 +20,7 @@ setup(
         'console_scripts': [
             'orphism = orphism.__main__:main',
         ]
-    }
+    },
+    long_description=long_description,
+    long_description_content_type='text/markdown'
 )
