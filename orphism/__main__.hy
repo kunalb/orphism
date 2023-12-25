@@ -5,10 +5,9 @@
 
 (require hyrule.control [defmain])
 
-; TODO Add gentle ctrl-c handling
 
-
-(defmain [script #* vals]
+(defn main [script #* vals]
+  "Explicitly extracted as an entrypoint"
   (when vals
     (rich.print (LineRenderable (lfor val vals (float val))))
     (return))
@@ -23,3 +22,7 @@
           (l.refresh)))
       (except [e KeyboardInterrupt]
         (print "Interrupted! Exiting...")))))
+
+
+(defmain [script #* vals]
+  (main script #* vals))

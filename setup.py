@@ -8,5 +8,10 @@ setup(
         "hy>=0.27.0",
         "hyrule>=0.4.0",
         "rich>=12.6.0",
-    ]
+    ],
+    entry_points={
+        'console_scripts': [
+            'orphism = orphism.__main__:main',
+        ]
+    }
 )
