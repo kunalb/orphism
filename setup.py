@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="orphism",
-    version="0.0.1.dev1",
+    version="0.0.1.dev2",
     packages=find_packages(include=["orphism"]),
     package_data={
         "orphism": ["*.hy"],
