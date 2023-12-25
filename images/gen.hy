@@ -29,6 +29,5 @@
     "x^2"
     (LineRenderable (list (map (fn [x] (* x x)) inputs))))
 
-  (setv console (Console :record True))
-  (console.print table :justify "center")
-  (console.save_svg "orphism.svg" :title "Orphism"))
+  (setv console (Console))
+  (console.print table :justify "center"))

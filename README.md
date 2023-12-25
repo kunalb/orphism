@@ -12,7 +12,7 @@ For fun -- and the joy of programming -- Orphism is implemented in [Hy Lang](htt
 
 This is currently a **development build**: please expect the API and design to change dramatically as I iterate.
 
-![Demo](https://github.com/kunalb/orphism/raw/main/images/orphism.svg)
+![Demo](https://github.com/kunalb/orphism/raw/main/images/orphism.png)
 
 
 ## Installation
