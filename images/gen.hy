@@ -12,7 +12,6 @@
   (setv table
         (Table "~" "Chart"
                :box box.SIMPLE_HEAD
-               :expand True
                :show_header False))
 
   (setv inputs (lfor x (range 0 (* 2 628) 12) (/ x 100)))
