@@ -54,7 +54,7 @@
       (yield (self.segment bucket)))
     (when self.-buckets
       (yield (Segment f" {(-format-number-9 (get self.-buckets.vals -1))}"
-                      (Style :color "#ffffff" :bgcolor "#000000"))))
+                      (Style :color "#ffffff" :bgcolor "#000000" :bold True))))
 
     (yield "\n")))
 
