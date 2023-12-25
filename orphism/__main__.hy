@@ -1,3 +1,5 @@
+(import sys)
+
 (import rich)
 (import rich.live [Live])
 
@@ -6,8 +8,10 @@
 (require hyrule.control [defmain])
 
 
-(defn main [script #* vals]
+(defn main []
   "Explicitly extracted as an entrypoint"
+  (setv #(script #* vals) sys.argv)
+
   (when vals
     (rich.print (LineRenderable (lfor val vals (float val))))
     (return))
@@ -24,5 +28,5 @@
         (print "Interrupted! Exiting...")))))
 
 
-(defmain [script #* vals]
-  (main script #* vals))
+(defmain []
+  (main))
