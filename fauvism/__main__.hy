@@ -5,6 +5,8 @@
 
 (require hyrule.control [defmain])
 
+; TODO Add gentle ctrl-c handling
+
 
 (defmain [script #* vals]
   (when vals
@@ -14,7 +16,10 @@
   (setv line (LineRenderable))
 
   (with [l (Live line :auto_refresh False)]
-    (for [vals sys.stdin]
-      (for [val (.split vals)]
-        (line.add-val (float val))
-        (l.refresh)))))
+    (try
+      (for [vals sys.stdin]
+        (for [val (.split vals)]
+          (line.add-val (float val))
+          (l.refresh)))
+      (except [e KeyboardInterrupt]
+        (print "Interrupted! Exiting...")))))
