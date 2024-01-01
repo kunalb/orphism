@@ -11,8 +11,9 @@
 
 (defclass LineRenderable []
 
-  (defn __init__ [self [vals None]]
+  (defn __init__ [self [vals None] [show-last-val False]]
     (setv self.-buckets (BucketList (* (len BARS) (// (len COLORS) 2)) vals))
+    (setv self.-show-last-val show-last-val)
     (setv self.-segment-cache {}))
 
   (defn add-val [self val]
@@ -49,13 +50,14 @@
 
   (defn __rich_console__ [self console options]
     (setv offset
-          (max 0 (- (len self.-buckets) (- console.size.width 10))))
+          (max 0 (- (len self.-buckets)
+                    (- console.size.width
+                       (if self.-show-last-val 10 0)))))
     (for [bucket (cut self.-buckets offset None)]
       (yield (self.segment bucket)))
-    (when self.-buckets
+    (when (and self.-buckets self.-show-last-val)
       (yield (Segment f" {(-format-number-9 (get self.-buckets.vals -1))}"
                       (Style :color "#ffffff" :bgcolor "#000000" :bold True))))
-
     (yield "\n")))
 
 
