@@ -1,3 +1,4 @@
+(import argparse)
 (import sys)
 
 (import rich)
@@ -10,14 +11,25 @@
 
 (defn main []
   "Explicitly extracted as an entrypoint"
-  (setv #(script #* vals) sys.argv)
+  (setv parser (argparse.ArgumentParser))
+  (parser.add-argument "vals"
+                       :nargs "*"
+                       :help "Values to plot, can also be piped in through stdin")
+  (parser.add-argument "-l"
+                       "--show-last-value"
+                       :help "Show the last value on the line"
+                       :action "store_true"
+                       :default False)
+  (setv args (parser.parse_args))
 
-  (when vals
-    (rich.print (LineRenderable (lfor val vals (float val))))
+  (when args.vals
+    (rich.print (LineRenderable
+                  (lfor val args.vals (float val))
+                  :show-last-val args.show-last-value))
     (return))
 
-  (setv line (LineRenderable))
-
+  (setv line (LineRenderable
+               :show-last-val args.show-last-value))
   (with [l (Live line :auto_refresh False)]
     (try
       (for [vals sys.stdin]
