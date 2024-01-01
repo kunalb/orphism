@@ -6,7 +6,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="orphism",
-    version="0.0.1.dev3",
+    version="0.0.1.dev4",
     packages=find_packages(include=["orphism"]),
     package_data={
         "orphism": ["*.hy"],
